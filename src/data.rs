@@ -1,0 +1,184 @@
+use chrono::{Duration, NaiveDate};
+
+use crate::models::{Area, ChecklistItem, Project, Task};
+
+pub fn initial_areas() -> Vec<Area> {
+    vec![
+        Area {
+            id: "a-personal".into(),
+            name: "Personal".into(),
+            projects: vec![
+                Project { id: "p-trip".into(), name: "Iceland trip".into(), emoji: "🧊".into(), tasks: 7, done: 3 },
+                Project { id: "p-home".into(), name: "Apartment refresh".into(), emoji: "🪴".into(), tasks: 4, done: 1 },
+                Project { id: "p-read".into(), name: "Reading list".into(), emoji: "📚".into(), tasks: 12, done: 8 },
+            ],
+        },
+        Area {
+            id: "a-work".into(),
+            name: "Work".into(),
+            projects: vec![
+                Project { id: "p-launch".into(), name: "Q3 product launch".into(), emoji: "🚀".into(), tasks: 18, done: 5 },
+                Project { id: "p-hire".into(), name: "Hire designer".into(), emoji: "🧑\u{200d}🎨".into(), tasks: 6, done: 2 },
+            ],
+        },
+        Area {
+            id: "a-side".into(),
+            name: "Side projects".into(),
+            projects: vec![
+                Project { id: "p-iced".into(), name: "IcedGTD".into(), emoji: "❄️".into(), tasks: 9, done: 0 },
+            ],
+        },
+    ]
+}
+
+fn add_days(today: NaiveDate, n: i64) -> NaiveDate {
+    today + Duration::days(n)
+}
+
+pub fn make_initial_tasks(today: NaiveDate) -> Vec<Task> {
+    vec![
+        Task {
+            id: "t1".into(),
+            title: "Review Q3 launch checklist with Maya".into(),
+            when: Some(add_days(today, 0)),
+            deadline: Some(add_days(today, 2)),
+            project: Some("p-launch".into()),
+            tags: vec!["@work".into()],
+            notes: "Bring the customer-research deck. Confirm legal review owner before EOD.".into(),
+            checklist: vec![
+                ChecklistItem { id: "c1".into(), text: "Pull last week's metrics".into(), done: true },
+                ChecklistItem { id: "c2".into(), text: "Print agenda".into(), done: false },
+                ChecklistItem { id: "c3".into(), text: "Confirm room booking".into(), done: false },
+            ],
+            done: false, done_at: None, evening: false, repeat: None,
+        },
+        Task {
+            id: "t2".into(),
+            title: "Book flights to Reykjavík".into(),
+            when: Some(add_days(today, 0)), deadline: Some(add_days(today, 7)),
+            project: Some("p-trip".into()), tags: vec!["@home".into()],
+            notes: String::new(), checklist: vec![],
+            done: false, done_at: None, evening: false, repeat: None,
+        },
+        Task {
+            id: "t3".into(),
+            title: "Daily Spanish — 15 min".into(),
+            when: Some(add_days(today, 0)), deadline: None,
+            project: None, tags: vec!["@home".into()],
+            notes: String::new(), checklist: vec![],
+            done: false, done_at: None, evening: false, repeat: Some("Every day".into()),
+        },
+        Task {
+            id: "t4".into(),
+            title: "Reply to Jonas about contract draft".into(),
+            when: Some(add_days(today, 0)), deadline: None,
+            project: Some("p-hire".into()), tags: vec!["@work".into()],
+            notes: String::new(), checklist: vec![],
+            done: false, done_at: None, evening: false, repeat: None,
+        },
+        Task {
+            id: "t5".into(),
+            title: "Pick up dry cleaning".into(),
+            when: Some(add_days(today, 0)), deadline: None,
+            project: None, tags: vec!["@errand".into()],
+            notes: String::new(), checklist: vec![],
+            done: false, done_at: None, evening: false, repeat: None,
+        },
+        Task {
+            id: "t6".into(),
+            title: "Cook dinner — pasta with the new pan".into(),
+            when: Some(add_days(today, 0)), deadline: None,
+            project: None, tags: vec!["@home".into()],
+            notes: String::new(), checklist: vec![],
+            done: false, done_at: None, evening: true, repeat: None,
+        },
+        Task {
+            id: "t7".into(),
+            title: "Call Mom".into(),
+            when: Some(add_days(today, 0)), deadline: None,
+            project: None, tags: vec!["@home".into()],
+            notes: String::new(), checklist: vec![],
+            done: false, done_at: None, evening: true, repeat: None,
+        },
+        Task {
+            id: "t8".into(),
+            title: "Submit visa application".into(),
+            when: Some(add_days(today, 3)), deadline: Some(add_days(today, 5)),
+            project: Some("p-trip".into()), tags: vec!["@home".into()],
+            notes: String::new(), checklist: vec![],
+            done: false, done_at: None, evening: false, repeat: None,
+        },
+        Task {
+            id: "t9".into(),
+            title: "Quarterly review prep".into(),
+            when: Some(add_days(today, 5)), deadline: None,
+            project: Some("p-launch".into()), tags: vec!["@work".into()],
+            notes: String::new(), checklist: vec![],
+            done: false, done_at: None, evening: false, repeat: None,
+        },
+        Task {
+            id: "t10".into(),
+            title: "Order replacement chair".into(),
+            when: Some(add_days(today, 2)), deadline: None,
+            project: Some("p-home".into()), tags: vec!["@home".into()],
+            notes: String::new(), checklist: vec![],
+            done: false, done_at: None, evening: false, repeat: None,
+        },
+        Task {
+            id: "t11".into(),
+            title: "Weekly review".into(),
+            when: Some(add_days(today, 2)), deadline: None,
+            project: None, tags: vec![],
+            notes: String::new(), checklist: vec![],
+            done: false, done_at: None, evening: false, repeat: Some("Every Friday".into()),
+        },
+        Task {
+            id: "t12".into(),
+            title: "Audit the bookshelf".into(),
+            when: None, deadline: None,
+            project: Some("p-home".into()), tags: vec!["@home".into()],
+            notes: String::new(), checklist: vec![],
+            done: false, done_at: None, evening: false, repeat: None,
+        },
+        Task {
+            id: "t13".into(),
+            title: "Sketch landing page hero".into(),
+            when: None, deadline: None,
+            project: Some("p-iced".into()), tags: vec!["@work".into()],
+            notes: String::new(), checklist: vec![],
+            done: false, done_at: None, evening: false, repeat: None,
+        },
+        Task {
+            id: "t14".into(),
+            title: "Set up keyboard shortcuts in Iced".into(),
+            when: None, deadline: None,
+            project: Some("p-iced".into()), tags: vec!["@work".into()],
+            notes: "See iced::keyboard module".into(), checklist: vec![],
+            done: false, done_at: None, evening: false, repeat: None,
+        },
+        Task {
+            id: "t15".into(),
+            title: "Pack list — start draft".into(),
+            when: None, deadline: None,
+            project: Some("p-trip".into()), tags: vec![],
+            notes: String::new(), checklist: vec![],
+            done: false, done_at: None, evening: false, repeat: None,
+        },
+        Task {
+            id: "t16".into(),
+            title: "Buy thermal layers".into(),
+            when: None, deadline: None,
+            project: Some("p-trip".into()), tags: vec!["@home".into()],
+            notes: String::new(), checklist: vec![],
+            done: true, done_at: Some(add_days(today, -1)), evening: false, repeat: None,
+        },
+        Task {
+            id: "t17".into(),
+            title: "Renew passport".into(),
+            when: None, deadline: None,
+            project: Some("p-trip".into()), tags: vec![],
+            notes: String::new(), checklist: vec![],
+            done: true, done_at: Some(add_days(today, -3)), evening: false, repeat: None,
+        },
+    ]
+}
