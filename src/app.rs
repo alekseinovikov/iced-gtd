@@ -1066,7 +1066,7 @@ pub fn build_groups(app: &App) -> Vec<GroupedTasks> {
         }],
         View::Logbook => {
             let mut v: Vec<&TaskModel> = visible.iter().filter(|t| t.done).copied().collect();
-            v.sort_by(|a, b| b.done_at.cmp(&a.done_at));
+            v.sort_by_key(|t| std::cmp::Reverse(t.done_at));
             let ids = v.iter().map(|t| t.id.clone()).collect();
             vec![GroupedTasks {
                 key: "log".into(),
