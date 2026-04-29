@@ -1,5 +1,5 @@
 use chrono::{Datelike, Duration, NaiveDate};
-use iced::widget::{button, column, container, mouse_area, row, text, Space};
+use iced::widget::{Space, button, column, container, mouse_area, row, text};
 use iced::{Alignment, Element, Length, Padding};
 
 use crate::app::{App, Message};
@@ -24,7 +24,10 @@ pub fn view(app: &App) -> Element<'_, Message> {
         button(
             row![
                 icons::colored(icon, 14, tokens.ink_3),
-                text(label.to_string()).size(13).color(tokens.ink_2).width(Length::Fill),
+                text(label.to_string())
+                    .size(13)
+                    .color(tokens.ink_2)
+                    .width(Length::Fill),
                 text(day_hint).size(11).color(tokens.ink_4),
             ]
             .spacing(8)
@@ -40,13 +43,33 @@ pub fn view(app: &App) -> Element<'_, Message> {
 
     let quick_grid = column![
         row![
-            qbtn(icons::today(), "Today", format!("{}", today.day()), Message::DatePickerPick(Some(today))),
-            qbtn(icons::clock(), "Tomorrow", weekday_short(tomorrow.weekday()).to_string(), Message::DatePickerPick(Some(tomorrow))),
+            qbtn(
+                icons::today(),
+                "Today",
+                format!("{}", today.day()),
+                Message::DatePickerPick(Some(today))
+            ),
+            qbtn(
+                icons::clock(),
+                "Tomorrow",
+                weekday_short(tomorrow.weekday()).to_string(),
+                Message::DatePickerPick(Some(tomorrow))
+            ),
         ]
         .spacing(4),
         row![
-            qbtn(icons::weekend(), "This weekend", "Sat".to_string(), Message::DatePickerPick(Some(weekend))),
-            qbtn(icons::someday(), "Someday", "—".to_string(), Message::DatePickerPick(None)),
+            qbtn(
+                icons::weekend(),
+                "This weekend",
+                "Sat".to_string(),
+                Message::DatePickerPick(Some(weekend))
+            ),
+            qbtn(
+                icons::someday(),
+                "Someday",
+                "—".to_string(),
+                Message::DatePickerPick(None)
+            ),
         ]
         .spacing(4),
     ]
@@ -61,7 +84,10 @@ pub fn view(app: &App) -> Element<'_, Message> {
             .height(Length::Fixed(24.0))
             .style(styles::button::small_ghost(tokens))
             .on_press(Message::DatePickerNav(-1)),
-        text(month_label).size(13).color(tokens.ink).width(Length::Fill),
+        text(month_label)
+            .size(13)
+            .color(tokens.ink)
+            .width(Length::Fill),
         button(text("›").size(14).color(tokens.ink_3))
             .padding(0)
             .width(Length::Fixed(24.0))
@@ -79,25 +105,43 @@ pub fn view(app: &App) -> Element<'_, Message> {
             .into()
     };
 
-    let mut grid_rows = column![row![
-        dn_label("Sun"),
-        dn_label("Mon"),
-        dn_label("Tue"),
-        dn_label("Wed"),
-        dn_label("Thu"),
-        dn_label("Fri"),
-        dn_label("Sat"),
-    ]
-    .spacing(2)];
+    let mut grid_rows = column![
+        row![
+            dn_label("Sun"),
+            dn_label("Mon"),
+            dn_label("Tue"),
+            dn_label("Wed"),
+            dn_label("Thu"),
+            dn_label("Fri"),
+            dn_label("Sat"),
+        ]
+        .spacing(2)
+    ];
 
     let first = NaiveDate::from_ymd_opt(dp.view_year, dp.view_month, 1).unwrap();
     let first_dow = first.weekday().num_days_from_sunday() as i32;
     let days_in_month = days_in(dp.view_year, dp.view_month);
-    let prev_year = if dp.view_month == 1 { dp.view_year - 1 } else { dp.view_year };
-    let prev_month = if dp.view_month == 1 { 12 } else { dp.view_month - 1 };
+    let prev_year = if dp.view_month == 1 {
+        dp.view_year - 1
+    } else {
+        dp.view_year
+    };
+    let prev_month = if dp.view_month == 1 {
+        12
+    } else {
+        dp.view_month - 1
+    };
     let prev_days = days_in(prev_year, prev_month);
-    let next_year = if dp.view_month == 12 { dp.view_year + 1 } else { dp.view_year };
-    let next_month = if dp.view_month == 12 { 1 } else { dp.view_month + 1 };
+    let next_year = if dp.view_month == 12 {
+        dp.view_year + 1
+    } else {
+        dp.view_year
+    };
+    let next_month = if dp.view_month == 12 {
+        1
+    } else {
+        dp.view_month + 1
+    };
 
     let mut cells: Vec<(i32, u32, u32, bool)> = Vec::new();
     // (year, month, day, muted)
@@ -123,7 +167,12 @@ pub fn view(app: &App) -> Element<'_, Message> {
                 .padding(0)
                 .width(Length::Fill)
                 .height(Length::Fixed(30.0))
-                .style(styles::button::cal_day(tokens, *muted, is_today, is_selected))
+                .style(styles::button::cal_day(
+                    tokens,
+                    *muted,
+                    is_today,
+                    is_selected,
+                ))
                 .on_press(Message::DatePickerPick(Some(date)));
             r = r.push(container(cell).width(Length::Fill));
         }

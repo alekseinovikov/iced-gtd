@@ -1,7 +1,7 @@
 use std::borrow::Cow;
 
 use iced::widget::svg::{self, Handle};
-use iced::widget::{container, Svg};
+use iced::widget::{Svg, container};
 use iced::{Color, Element, Length, Theme};
 
 macro_rules! icon_handle {
@@ -42,9 +42,8 @@ icon_handle!(x, "x.svg");
 
 pub fn colored<'a, Message: 'a>(handle: Handle, size: u16, color: Color) -> Element<'a, Message> {
     let s = size as f32;
-    let svg = Svg::new(handle).style(move |_theme: &Theme, _status| svg::Style {
-        color: Some(color),
-    });
+    let svg =
+        Svg::new(handle).style(move |_theme: &Theme, _status| svg::Style { color: Some(color) });
     container(svg.width(Length::Fixed(s)).height(Length::Fixed(s)))
         .width(Length::Fixed(s))
         .height(Length::Fixed(s))
@@ -53,8 +52,12 @@ pub fn colored<'a, Message: 'a>(handle: Handle, size: u16, color: Color) -> Elem
 
 pub fn plain<'a, Message: 'a>(handle: Handle, size: u16) -> Element<'a, Message> {
     let s = size as f32;
-    container(Svg::new(handle).width(Length::Fixed(s)).height(Length::Fixed(s)))
-        .width(Length::Fixed(s))
-        .height(Length::Fixed(s))
-        .into()
+    container(
+        Svg::new(handle)
+            .width(Length::Fixed(s))
+            .height(Length::Fixed(s)),
+    )
+    .width(Length::Fixed(s))
+    .height(Length::Fixed(s))
+    .into()
 }

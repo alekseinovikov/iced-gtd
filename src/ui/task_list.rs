@@ -1,4 +1,4 @@
-use iced::widget::{column, container, row, text, text_input, Space};
+use iced::widget::{Space, column, container, row, text, text_input};
 use iced::{Alignment, Element, Length, Padding};
 
 use crate::app::{App, Message};
@@ -37,10 +37,12 @@ fn section_divider<'a>(
     title: String,
     subtitle: Option<String>,
 ) -> Element<'a, Message> {
-    let mut children: Vec<Element<'a, Message>> = vec![text(title.to_uppercase())
-        .size(11.5)
-        .color(tokens.ink_4)
-        .into()];
+    let mut children: Vec<Element<'a, Message>> = vec![
+        text(title.to_uppercase())
+            .size(11.5)
+            .color(tokens.ink_4)
+            .into(),
+    ];
     if let Some(sub) = subtitle {
         children.push(text(sub).size(11.5).color(tokens.ink_3).into());
     }
@@ -68,11 +70,7 @@ fn empty_hint<'a>(tokens: crate::theme::Tokens, msg: String) -> Element<'a, Mess
         .into()
 }
 
-fn new_task<'a>(
-    app: &'a App,
-    key: String,
-    placeholder: String,
-) -> Element<'a, Message> {
+fn new_task<'a>(app: &'a App, key: String, placeholder: String) -> Element<'a, Message> {
     let tokens = app.tokens;
     let buf = app.composer_buffers.get(&key).cloned().unwrap_or_default();
     let focused = app.composer_focused.as_deref() == Some(key.as_str());

@@ -1,4 +1,4 @@
-use iced::widget::{button, column, container, row, scrollable, text, text_input, Space};
+use iced::widget::{Space, button, column, container, row, scrollable, text, text_input};
 use iced::{Alignment, Element, Length, Padding};
 
 use crate::app::{App, Message};
@@ -24,16 +24,30 @@ pub fn view(app: &App) -> Element<'_, Message> {
     });
 
     // Crumbs
-    let dot = container(Space::new().width(Length::Fixed(6.0)).height(Length::Fixed(6.0)))
-        .width(Length::Fixed(6.0))
-        .height(Length::Fixed(6.0))
-        .style(styles::container::accent_dot(tokens));
+    let dot = container(
+        Space::new()
+            .width(Length::Fixed(6.0))
+            .height(Length::Fixed(6.0)),
+    )
+    .width(Length::Fixed(6.0))
+    .height(Length::Fixed(6.0))
+    .style(styles::container::accent_dot(tokens));
 
     let mut crumbs_children: Vec<Element<'_, Message>> = vec![dot.into()];
     if let Some((p, a)) = project_info.clone() {
-        crumbs_children.push(text(a.name.to_uppercase()).size(11.5).color(tokens.ink_4).into());
+        crumbs_children.push(
+            text(a.name.to_uppercase())
+                .size(11.5)
+                .color(tokens.ink_4)
+                .into(),
+        );
         crumbs_children.push(text("/").size(11.5).color(tokens.ink_4).into());
-        crumbs_children.push(text(p.name.to_uppercase()).size(11.5).color(tokens.ink_4).into());
+        crumbs_children.push(
+            text(p.name.to_uppercase())
+                .size(11.5)
+                .color(tokens.ink_4)
+                .into(),
+        );
     } else {
         crumbs_children.push(text("INBOX").size(11.5).color(tokens.ink_4).into());
     }
@@ -46,8 +60,8 @@ pub fn view(app: &App) -> Element<'_, Message> {
         .style(styles::button::titlebar_icon(tokens))
         .on_press(Message::InspectorClose);
 
-    let header_top = row![container(crumbs).width(Length::Fill), close_btn]
-        .align_y(Alignment::Center);
+    let header_top =
+        row![container(crumbs).width(Length::Fill), close_btn].align_y(Alignment::Center);
 
     let title_input = text_input("Untitled", &app.inspector_title_buf)
         .id(iced::widget::Id::new("inspector-title"))
@@ -55,15 +69,18 @@ pub fn view(app: &App) -> Element<'_, Message> {
         .on_submit(Message::CommitTaskTitle)
         .padding(0)
         .size(18)
+        .font(iced::Font {
+            weight: iced::font::Weight::Semibold,
+            ..Default::default()
+        })
         .style(styles::text_input::flat(tokens));
 
-    let header = container(column![header_top, title_input].spacing(8))
-        .padding(Padding {
-            top: 18.0,
-            right: 20.0,
-            bottom: 12.0,
-            left: 20.0,
-        });
+    let header = container(column![header_top, title_input].spacing(8)).padding(Padding {
+        top: 18.0,
+        right: 20.0,
+        bottom: 12.0,
+        left: 20.0,
+    });
 
     let header_border = container(Space::new().height(Length::Fixed(1.0)))
         .width(Length::Fill)
@@ -102,7 +119,11 @@ pub fn view(app: &App) -> Element<'_, Message> {
                 None => "No deadline".to_string(),
             })
             .size(13)
-            .color(if task.deadline.is_some() { tokens.ink_2 } else { tokens.ink_4 }),
+            .color(if task.deadline.is_some() {
+                tokens.ink_2
+            } else {
+                tokens.ink_4
+            }),
         ]
         .spacing(4)
         .align_y(Alignment::Center),
@@ -131,10 +152,14 @@ pub fn view(app: &App) -> Element<'_, Message> {
 
     let project_value: Element<'_, Message> = if let Some((p, _a)) = project_info.clone() {
         row![
-            container(Space::new().width(Length::Fixed(6.0)).height(Length::Fixed(6.0)))
-                .width(Length::Fixed(6.0))
-                .height(Length::Fixed(6.0))
-                .style(styles::container::proj_dot(tokens)),
+            container(
+                Space::new()
+                    .width(Length::Fixed(6.0))
+                    .height(Length::Fixed(6.0))
+            )
+            .width(Length::Fixed(6.0))
+            .height(Length::Fixed(6.0))
+            .style(styles::container::proj_dot(tokens)),
             text(p.name).size(11.5).color(tokens.ink_3),
         ]
         .spacing(5)
@@ -184,11 +209,7 @@ pub fn view(app: &App) -> Element<'_, Message> {
         .size(13)
         .style(styles::text_input::notes_box(tokens));
 
-    let notes_section = column![
-        section_title(tokens, "Notes"),
-        notes_input,
-    ]
-    .spacing(8);
+    let notes_section = column![section_title(tokens, "Notes"), notes_input,].spacing(8);
 
     // Checklist
     let mut checklist_col = column![].spacing(4);
@@ -199,7 +220,10 @@ pub fn view(app: &App) -> Element<'_, Message> {
         let mark: Element<'_, Message> = if c.done {
             icons::colored(icons::check(), 10, tokens.on_accent)
         } else {
-            Space::new().width(Length::Fixed(10.0)).height(Length::Fixed(10.0)).into()
+            Space::new()
+                .width(Length::Fixed(10.0))
+                .height(Length::Fixed(10.0))
+                .into()
         };
         let item = button(
             row![
@@ -207,8 +231,8 @@ pub fn view(app: &App) -> Element<'_, Message> {
                     container(mark)
                         .width(Length::Fixed(14.0))
                         .height(Length::Fixed(14.0))
-                        .center_x(Length::Fill)
-                        .center_y(Length::Fill),
+                        .align_x(Alignment::Center)
+                        .align_y(Alignment::Center),
                 )
                 .padding(0)
                 .width(Length::Fixed(14.0))
@@ -227,9 +251,13 @@ pub fn view(app: &App) -> Element<'_, Message> {
         checklist_col = checklist_col.push(item);
     }
     let checklist_add = row![
-        container(Space::new().width(Length::Fixed(14.0)).height(Length::Fixed(14.0)))
-            .width(Length::Fixed(14.0))
-            .height(Length::Fixed(14.0)),
+        container(
+            Space::new()
+                .width(Length::Fixed(14.0))
+                .height(Length::Fixed(14.0))
+        )
+        .width(Length::Fixed(14.0))
+        .height(Length::Fixed(14.0)),
         text_input("Add subtask…", &app.inspector_checklist_buf)
             .on_input(Message::ChecklistAddChanged)
             .on_submit(Message::ChecklistAddSubmit)
@@ -250,7 +278,10 @@ pub fn view(app: &App) -> Element<'_, Message> {
         text("Created · 3 days ago").size(12).color(tokens.ink_4),
         text(format!(
             "Moved to {} · 2 days ago",
-            project_info.as_ref().map(|(p, _)| p.name.clone()).unwrap_or_else(|| "Inbox".into())
+            project_info
+                .as_ref()
+                .map(|(p, _)| p.name.clone())
+                .unwrap_or_else(|| "Inbox".into())
         ))
         .size(12)
         .color(tokens.ink_4),
@@ -291,7 +322,7 @@ fn field_row<'a>(
 ) -> Element<'a, Message> {
     container(
         row![
-            container(text(label).size(11.5).color(tokens.ink_4))
+            container(text(label.to_uppercase()).size(11.5).color(tokens.ink_4))
                 .width(Length::Fixed(88.0)),
             container(value).width(Length::Fill),
         ]
@@ -302,10 +333,7 @@ fn field_row<'a>(
     .into()
 }
 
-fn section_title<'a>(
-    tokens: crate::theme::Tokens,
-    label: &'a str,
-) -> Element<'a, Message> {
+fn section_title<'a>(tokens: crate::theme::Tokens, label: &'a str) -> Element<'a, Message> {
     container(text(label.to_uppercase()).size(11).color(tokens.ink_4))
         .padding(Padding {
             top: 18.0,

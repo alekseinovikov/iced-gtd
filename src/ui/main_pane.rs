@@ -1,4 +1,4 @@
-use iced::widget::{column, container, row, scrollable, text, Space};
+use iced::widget::{Space, column, container, row, scrollable, text};
 use iced::{Alignment, Element, Length, Padding};
 
 use crate::app::{App, Message};
@@ -11,11 +11,21 @@ pub fn view(app: &App) -> Element<'_, Message> {
 
     // Header
     let title_row = row![
-        container(Space::new().width(Length::Fixed(10.0)).height(Length::Fixed(10.0)))
-            .width(Length::Fixed(10.0))
-            .height(Length::Fixed(10.0))
-            .style(styles::container::accent_dot(tokens)),
-        text(header_info.title.clone()).size(26).color(tokens.ink),
+        container(
+            Space::new()
+                .width(Length::Fixed(10.0))
+                .height(Length::Fixed(10.0))
+        )
+        .width(Length::Fixed(10.0))
+        .height(Length::Fixed(10.0))
+        .style(styles::container::accent_dot(tokens)),
+        text(header_info.title.clone())
+            .size(26)
+            .color(tokens.ink)
+            .font(iced::Font {
+                weight: iced::font::Weight::Semibold,
+                ..Default::default()
+            }),
         text(header_info.meta.clone()).size(13).color(tokens.ink_3),
     ]
     .spacing(12)
@@ -74,10 +84,30 @@ pub fn view(app: &App) -> Element<'_, Message> {
 
     // Toolbar
     let chips = row![
-        chip(tokens, "All", app.filter == crate::models::Filter::All, Message::ChipFilter(crate::models::Filter::All)),
-        chip(tokens, "@work", app.filter == crate::models::Filter::Work, Message::ChipFilter(crate::models::Filter::Work)),
-        chip(tokens, "@home", app.filter == crate::models::Filter::Home, Message::ChipFilter(crate::models::Filter::Home)),
-        chip(tokens, "@errand", app.filter == crate::models::Filter::Errand, Message::ChipFilter(crate::models::Filter::Errand)),
+        chip(
+            tokens,
+            "All",
+            app.filter == crate::models::Filter::All,
+            Message::ChipFilter(crate::models::Filter::All)
+        ),
+        chip(
+            tokens,
+            "@work",
+            app.filter == crate::models::Filter::Work,
+            Message::ChipFilter(crate::models::Filter::Work)
+        ),
+        chip(
+            tokens,
+            "@home",
+            app.filter == crate::models::Filter::Home,
+            Message::ChipFilter(crate::models::Filter::Home)
+        ),
+        chip(
+            tokens,
+            "@errand",
+            app.filter == crate::models::Filter::Errand,
+            Message::ChipFilter(crate::models::Filter::Errand)
+        ),
     ]
     .spacing(8);
 

@@ -4,7 +4,12 @@ use iced::{Background, Border, Color, Theme};
 use crate::theme::Tokens;
 
 fn transparent() -> Color {
-    Color { r: 0.0, g: 0.0, b: 0.0, a: 0.0 }
+    Color {
+        r: 0.0,
+        g: 0.0,
+        b: 0.0,
+        a: 0.0,
+    }
 }
 
 pub fn primary(tokens: Tokens) -> impl Fn(&Theme, button::Status) -> button::Style {
@@ -95,7 +100,11 @@ pub fn titlebar_icon(tokens: Tokens) -> impl Fn(&Theme, button::Status) -> butto
 pub fn nav_item(tokens: Tokens, active: bool) -> impl Fn(&Theme, button::Status) -> button::Style {
     move |_theme, status| {
         let (bg, fg) = if active {
-            let fg = if tokens.is_dark { tokens.accent } else { tokens.accent_ink };
+            let fg = if tokens.is_dark {
+                tokens.accent
+            } else {
+                tokens.accent_ink
+            };
             (tokens.accent_soft, fg)
         } else {
             match status {
@@ -140,7 +149,11 @@ pub fn area_header(tokens: Tokens) -> impl Fn(&Theme, button::Status) -> button:
 pub fn proj_item(tokens: Tokens, active: bool) -> impl Fn(&Theme, button::Status) -> button::Style {
     move |_theme, status| {
         let (bg, fg) = if active {
-            let fg = if tokens.is_dark { tokens.accent } else { tokens.accent_ink };
+            let fg = if tokens.is_dark {
+                tokens.accent
+            } else {
+                tokens.accent_ink
+            };
             (tokens.accent_soft, fg)
         } else {
             match status {
@@ -227,7 +240,10 @@ pub fn checkbox_btn(
         } else {
             let (bg, border) = match status {
                 button::Status::Hovered => (tokens.bg_3, tokens.ink_2),
-                _ => (transparent(), if deadline { tokens.warn } else { tokens.ink_4 }),
+                _ => (
+                    transparent(),
+                    if deadline { tokens.warn } else { tokens.ink_4 },
+                ),
             };
             button::Style {
                 background: Some(Background::Color(bg)),
@@ -266,7 +282,11 @@ pub fn cal_day(
         } else if is_today {
             button::Style {
                 background: Some(Background::Color(transparent())),
-                text_color: if tokens.is_dark { tokens.accent } else { tokens.accent_ink },
+                text_color: if tokens.is_dark {
+                    tokens.accent
+                } else {
+                    tokens.accent_ink
+                },
                 border: Border {
                     color: tokens.accent,
                     width: 1.0,
@@ -278,7 +298,10 @@ pub fn cal_day(
         } else {
             let (bg, fg) = match status {
                 button::Status::Hovered => (tokens.bg_3, tokens.ink),
-                _ => (transparent(), if muted { tokens.ink_4 } else { tokens.ink_2 }),
+                _ => (
+                    transparent(),
+                    if muted { tokens.ink_4 } else { tokens.ink_2 },
+                ),
             };
             button::Style {
                 background: Some(Background::Color(bg)),
@@ -350,7 +373,11 @@ pub fn task_row(
                 _ => transparent(),
             }
         };
-        let border_color = if selected { tokens.accent_border } else { transparent() };
+        let border_color = if selected {
+            tokens.accent_border
+        } else {
+            transparent()
+        };
         button::Style {
             background: Some(Background::Color(bg)),
             text_color: tokens.ink,

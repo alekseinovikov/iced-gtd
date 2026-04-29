@@ -7,7 +7,12 @@ use iced::{Background, Border, Color, Theme};
 use crate::theme::Tokens;
 
 fn transparent() -> Color {
-    Color { r: 0.0, g: 0.0, b: 0.0, a: 0.0 }
+    Color {
+        r: 0.0,
+        g: 0.0,
+        b: 0.0,
+        a: 0.0,
+    }
 }
 
 pub fn calm(tokens: Tokens) -> impl Fn(&Theme, scrollable::Status) -> scrollable::Style {

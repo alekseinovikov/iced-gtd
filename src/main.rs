@@ -1,3 +1,8 @@
+// `dead_code` is allowed crate-wide because Message variants and helper styles are
+// scaffolded for upcoming phases (drag-reorder polish, density popover, etc.).
+// Re-enable per-module if you want to flush specific dead code.
+#![allow(dead_code)]
+
 mod app;
 mod data;
 mod date;
@@ -7,8 +12,8 @@ mod styles;
 mod theme;
 mod ui;
 
-use iced::window;
 use iced::Size;
+use iced::window;
 
 use app::App;
 

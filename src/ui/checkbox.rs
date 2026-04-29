@@ -1,6 +1,6 @@
 use iced::mouse;
 use iced::widget::canvas::{self, Cache, Geometry, Path, Stroke};
-use iced::widget::{container, Canvas};
+use iced::widget::{Canvas, container};
 use iced::{Color, Element, Length, Point, Rectangle, Renderer, Theme};
 
 pub struct BurstRing {
@@ -11,7 +11,11 @@ pub struct BurstRing {
 
 impl BurstRing {
     pub fn new(progress: f32, color: Color) -> Self {
-        Self { progress, color, cache: Cache::new() }
+        Self {
+            progress,
+            color,
+            cache: Cache::new(),
+        }
     }
 }
 
@@ -38,10 +42,7 @@ impl<Message> canvas::Program<Message> for BurstRing {
             let circle = Path::circle(center, radius);
             let mut color = self.color;
             color.a = alpha;
-            frame.stroke(
-                &circle,
-                Stroke::default().with_width(2.0).with_color(color),
-            );
+            frame.stroke(&circle, Stroke::default().with_width(2.0).with_color(color));
         });
         vec![geom]
     }

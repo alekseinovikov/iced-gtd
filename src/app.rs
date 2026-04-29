@@ -3,7 +3,7 @@ use std::time::Instant;
 
 use chrono::{Datelike, Local, NaiveDate};
 use iced::keyboard::{self, Modifiers};
-use iced::{event, window, Element, Event, Subscription, Task, Theme};
+use iced::{Element, Event, Subscription, Task, Theme, event, window};
 
 use crate::data;
 use crate::date::format_date;
@@ -43,7 +43,7 @@ pub struct App {
     pub filter: Filter,
     pub today: NaiveDate,
     pub search_query: String,
-    pub sidebar_open: f32,    // 0.0..=1.0
+    pub sidebar_open: f32,                   // 0.0..=1.0
     pub chevron_anims: HashMap<AreaId, f32>, // 0..1, 1 = collapsed
     pub inspector_title_buf: String,
     pub inspector_notes_buf: String,
@@ -198,10 +198,7 @@ impl App {
             subs.push(window::open_events().map(Message::WindowOpened));
         }
         if !self.bursting.is_empty() {
-            subs.push(
-                iced::time::every(std::time::Duration::from_millis(16))
-                    .map(Message::Tick),
-            );
+            subs.push(iced::time::every(std::time::Duration::from_millis(16)).map(Message::Tick));
         }
         Subscription::batch(subs)
     }
@@ -423,7 +420,12 @@ impl App {
                 self.selection.clear();
                 Task::none()
             }
-            Message::OpenDatePicker { target, field, anchor, initial } => {
+            Message::OpenDatePicker {
+                target,
+                field,
+                anchor,
+                initial,
+            } => {
                 let (y, m) = match initial {
                     Some(d) => (d.year(), d.month()),
                     None => (self.today.year(), self.today.month()),
@@ -534,7 +536,9 @@ impl App {
                         if lower == "n" {
                             return self.update(Message::AddTaskAtView);
                         } else if lower == "k" {
-                            return iced::widget::operation::focus(iced::widget::Id::new("sidebar-search"));
+                            return iced::widget::operation::focus(iced::widget::Id::new(
+                                "sidebar-search",
+                            ));
                         }
                     }
                     _ => {}
@@ -597,16 +601,17 @@ impl App {
                 Task::none()
             }
             Message::DragEnd => {
-                if let Some(d) = self.dragging.take() {
-                    if let Some(target) = d.drop_target {
-                        let from_idx = self.tasks.iter().position(|t| t.id == d.task_id);
-                        let to_idx = self.tasks.iter().position(|t| t.id == target);
-                        if let (Some(f), Some(to)) = (from_idx, to_idx) {
-                            let item = self.tasks.remove(f);
-                            let insert_at = if f < to { to } else { to };
-                            self.tasks.insert(insert_at.min(self.tasks.len()), item);
-                            return self.persist();
-                        }
+                if let Some(d) = self.dragging.take()
+                    && let Some(target) = d.drop_target
+                {
+                    let from_idx = self.tasks.iter().position(|t| t.id == d.task_id);
+                    let to_idx = self.tasks.iter().position(|t| t.id == target);
+                    if let (Some(f), Some(to)) = (from_idx, to_idx) {
+                        let item = self.tasks.remove(f);
+                        // After removing at f, indices > f have shifted left by 1.
+                        let insert_at = if f < to { to - 1 } else { to };
+                        self.tasks.insert(insert_at.min(self.tasks.len()), item);
+                        return self.persist();
                     }
                 }
                 Task::none()
@@ -622,10 +627,10 @@ impl App {
                 self.density = store.density;
                 self.collapsed_areas = store.collapsed_areas.into_iter().collect();
                 self.initial_data_loaded = true;
-                if let Some(id) = self.open_task.clone() {
-                    if !self.tasks.iter().any(|t| t.id == id) {
-                        self.open_task = self.tasks.first().map(|t| t.id.clone());
-                    }
+                if let Some(id) = self.open_task.clone()
+                    && !self.tasks.iter().any(|t| t.id == id)
+                {
+                    self.open_task = self.tasks.first().map(|t| t.id.clone());
                 }
                 self.sync_inspector_buffers();
                 Task::none()
@@ -644,9 +649,11 @@ impl App {
     }
 
     fn add_task(&mut self, group_key: String, title: String) {
-        let when = if self.view == View::Today || group_key == "today" || group_key == "evening" {
-            Some(self.today)
-        } else if self.view == View::Upcoming {
+        let when = if self.view == View::Today
+            || self.view == View::Upcoming
+            || group_key == "today"
+            || group_key == "evening"
+        {
             Some(self.today)
         } else {
             None
@@ -679,13 +686,13 @@ impl App {
 
     pub fn sync_inspector_buffers(&mut self) {
         if let Some(id) = self.open_task.clone() {
-            if Some(id.clone()) != self.inspector_open_id {
-                if let Some(t) = self.tasks.iter().find(|t| t.id == id) {
-                    self.inspector_title_buf = t.title.clone();
-                    self.inspector_notes_buf = t.notes.clone();
-                    self.inspector_checklist_buf.clear();
-                    self.inspector_open_id = Some(id);
-                }
+            if Some(id.clone()) != self.inspector_open_id
+                && let Some(t) = self.tasks.iter().find(|t| t.id == id)
+            {
+                self.inspector_title_buf = t.title.clone();
+                self.inspector_notes_buf = t.notes.clone();
+                self.inspector_checklist_buf.clear();
+                self.inspector_open_id = Some(id);
             }
         } else {
             self.inspector_open_id = None;
@@ -737,7 +744,12 @@ impl App {
                 anytime += 1;
             }
         }
-        Counts { inbox, today: today_n, upcoming, anytime }
+        Counts {
+            inbox,
+            today: today_n,
+            upcoming,
+            anytime,
+        }
     }
 
     pub fn header_info(&self) -> HeaderInfo {
@@ -746,7 +758,11 @@ impl App {
                 if let Some(pid) = self.active_project.as_ref() {
                     let map = self.projects_by_id();
                     if let Some((p, _aid, area_name)) = map.get(pid) {
-                        let ts: Vec<&TaskModel> = self.tasks.iter().filter(|t| t.project.as_deref() == Some(pid)).collect();
+                        let ts: Vec<&TaskModel> = self
+                            .tasks
+                            .iter()
+                            .filter(|t| t.project.as_deref() == Some(pid))
+                            .collect();
                         let done = ts.iter().filter(|t| t.done).count();
                         return HeaderInfo {
                             title: p.name.clone(),
@@ -796,8 +812,8 @@ impl App {
     }
 
     pub fn view(&self) -> Element<'_, Message> {
-        use iced::widget::{column, container, row, stack, Space};
         use iced::Length;
+        use iced::widget::{column, container, row, stack};
 
         let titlebar = ui::titlebar::view(self);
         let mut panes_row = row![].height(Length::Fill);
@@ -888,8 +904,16 @@ pub fn build_groups(app: &App) -> Vec<GroupedTasks> {
                     .filter(|t| t.project.as_deref() == Some(pid))
                     .copied()
                     .collect();
-                let open: Vec<TaskId> = scoped.iter().filter(|t| !t.done).map(|t| t.id.clone()).collect();
-                let done: Vec<TaskId> = scoped.iter().filter(|t| t.done).map(|t| t.id.clone()).collect();
+                let open: Vec<TaskId> = scoped
+                    .iter()
+                    .filter(|t| !t.done)
+                    .map(|t| t.id.clone())
+                    .collect();
+                let done: Vec<TaskId> = scoped
+                    .iter()
+                    .filter(|t| t.done)
+                    .map(|t| t.id.clone())
+                    .collect();
                 let mut groups = vec![GroupedTasks {
                     key: "open".into(),
                     title: String::new(),
@@ -986,15 +1010,16 @@ pub fn build_groups(app: &App) -> Vec<GroupedTasks> {
             groups
         }
         View::Upcoming => {
-            let mut buckets: std::collections::BTreeMap<NaiveDate, Vec<TaskId>> = Default::default();
+            let mut buckets: std::collections::BTreeMap<NaiveDate, Vec<TaskId>> =
+                Default::default();
             for t in &visible {
                 if t.done {
                     continue;
                 }
-                if let Some(when) = t.when {
-                    if when > today {
-                        buckets.entry(when).or_default().push(t.id.clone());
-                    }
+                if let Some(when) = t.when
+                    && when > today
+                {
+                    buckets.entry(when).or_default().push(t.id.clone());
                 }
             }
             buckets

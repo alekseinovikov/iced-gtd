@@ -1,4 +1,4 @@
-use iced::widget::{button, container, mouse_area, row, text, Space};
+use iced::widget::{Space, button, container, mouse_area, row, text};
 use iced::{Alignment, Element, Length, Padding};
 
 use crate::app::{App, Message};
@@ -13,15 +13,20 @@ pub fn view<'a>(app: &'a App, task: &'a Task) -> Element<'a, Message> {
     let project_name = task
         .project
         .as_ref()
-        .and_then(|pid| app.areas.iter().flat_map(|a| &a.projects).find(|p| &p.id == pid))
+        .and_then(|pid| {
+            app.areas
+                .iter()
+                .flat_map(|a| &a.projects)
+                .find(|p| &p.id == pid)
+        })
         .map(|p| p.name.clone());
 
     // Grip
     let grip_visual = container(icons::colored(icons::grip(), 10, tokens.ink_4))
         .width(Length::Fixed(24.0))
         .height(Length::Fixed(app.density.row_h() as f32))
-        .center_x(Length::Fill)
-        .center_y(Length::Fill);
+        .align_x(Alignment::Center)
+        .align_y(Alignment::Center);
     let grip = mouse_area(grip_visual)
         .interaction(iced::mouse::Interaction::Grab)
         .on_press(Message::DragBegin(task.id.clone()));
@@ -30,19 +35,26 @@ pub fn view<'a>(app: &'a App, task: &'a Task) -> Element<'a, Message> {
     let cb_inner: Element<'a, Message> = if task.done {
         icons::colored(icons::check(), 12, tokens.on_accent)
     } else {
-        Space::new().width(Length::Fixed(12.0)).height(Length::Fixed(12.0)).into()
+        Space::new()
+            .width(Length::Fixed(12.0))
+            .height(Length::Fixed(12.0))
+            .into()
     };
     let checkbox = button(
         container(cb_inner)
             .width(Length::Fixed(18.0))
             .height(Length::Fixed(18.0))
-            .center_x(Length::Fill)
-            .center_y(Length::Fill),
+            .align_x(Alignment::Center)
+            .align_y(Alignment::Center),
     )
     .padding(0)
     .width(Length::Fixed(18.0))
     .height(Length::Fixed(18.0))
-    .style(styles::button::checkbox_btn(tokens, task.done, task.deadline.is_some()))
+    .style(styles::button::checkbox_btn(
+        tokens,
+        task.done,
+        task.deadline.is_some(),
+    ))
     .on_press(Message::CheckTask(task.id.clone()));
 
     // Burst overlay if active
@@ -53,8 +65,8 @@ pub fn view<'a>(app: &'a App, task: &'a Task) -> Element<'a, Message> {
         let centered_cb = container(checkbox)
             .width(Length::Fixed(22.0))
             .height(Length::Fixed(22.0))
-            .center_x(Length::Fill)
-            .center_y(Length::Fill);
+            .align_x(Alignment::Center)
+            .align_y(Alignment::Center);
         let burst_box = container(burst)
             .width(Length::Fixed(22.0))
             .height(Length::Fixed(22.0));
@@ -66,8 +78,8 @@ pub fn view<'a>(app: &'a App, task: &'a Task) -> Element<'a, Message> {
     let cb_cell = container(cb_with_burst)
         .width(Length::Fixed(22.0))
         .height(Length::Fixed(app.density.row_h() as f32))
-        .center_x(Length::Fill)
-        .center_y(Length::Fill);
+        .align_x(Alignment::Center)
+        .align_y(Alignment::Center);
 
     // Title cluster
     let title_color = if task.done { tokens.ink_4 } else { tokens.ink };
@@ -78,22 +90,23 @@ pub fn view<'a>(app: &'a App, task: &'a Task) -> Element<'a, Message> {
     let mut title_row = row![title_text].spacing(8).align_y(Alignment::Center);
     if !task.notes.trim().is_empty() {
         title_row = title_row.push(
-            container(Space::new().width(Length::Fixed(4.0)).height(Length::Fixed(4.0)))
-                .width(Length::Fixed(4.0))
-                .height(Length::Fixed(4.0))
-                .style(notes_dot(tokens)),
+            container(
+                Space::new()
+                    .width(Length::Fixed(4.0))
+                    .height(Length::Fixed(4.0)),
+            )
+            .width(Length::Fixed(4.0))
+            .height(Length::Fixed(4.0))
+            .style(notes_dot(tokens)),
         );
     }
     if !task.checklist.is_empty() {
         let done_n = task.checklist.iter().filter(|c| c.done).count();
         let total_n = task.checklist.len();
         let chk_pill = container(
-            row![
-                icons::colored(icons::check(), 9, tokens.ink_3),
-                text(format!("{}/{}", done_n, total_n)).size(11).color(tokens.ink_3),
-            ]
-            .spacing(4)
-            .align_y(Alignment::Center),
+            text(format!("\u{2713} {}/{}", done_n, total_n))
+                .size(11)
+                .color(tokens.ink_3),
         )
         .padding(Padding::from([1.0, 6.0]))
         .style(styles::container::checklist_mini(tokens));
@@ -105,8 +118,7 @@ pub fn view<'a>(app: &'a App, task: &'a Task) -> Element<'a, Message> {
     // Meta cluster
     let mut meta_children: Vec<Element<'a, Message>> = Vec::new();
 
-    if let Some(rep) = task.repeat.as_ref() {
-        let _ = rep;
+    if task.repeat.is_some() {
         meta_children.push(icons::colored(icons::repeat(), 12, tokens.ink_4));
     }
     if let Some(tag) = task.tags.first() {
@@ -118,10 +130,14 @@ pub fn view<'a>(app: &'a App, task: &'a Task) -> Element<'a, Message> {
         );
     }
     if let Some(name) = project_name.as_ref() {
-        let dot = container(Space::new().width(Length::Fixed(6.0)).height(Length::Fixed(6.0)))
-            .width(Length::Fixed(6.0))
-            .height(Length::Fixed(6.0))
-            .style(styles::container::proj_dot(tokens));
+        let dot = container(
+            Space::new()
+                .width(Length::Fixed(6.0))
+                .height(Length::Fixed(6.0)),
+        )
+        .width(Length::Fixed(6.0))
+        .height(Length::Fixed(6.0))
+        .style(styles::container::proj_dot(tokens));
         meta_children.push(
             row![dot, text(name.clone()).size(11.5).color(tokens.ink_3)]
                 .spacing(5)
@@ -135,7 +151,11 @@ pub fn view<'a>(app: &'a App, task: &'a Task) -> Element<'a, Message> {
             let state = crate::date::due_state(when, app.today);
             let color = match state {
                 DueState::Today => {
-                    if tokens.is_dark { tokens.accent } else { tokens.accent_ink }
+                    if tokens.is_dark {
+                        tokens.accent
+                    } else {
+                        tokens.accent_ink
+                    }
                 }
                 DueState::Overdue => tokens.danger,
                 DueState::Scheduled => tokens.ink_3,
@@ -156,20 +176,18 @@ pub fn view<'a>(app: &'a App, task: &'a Task) -> Element<'a, Message> {
             });
             meta_children.push(due_chip.into());
         }
-    } else if task.done {
-        if let Some(da) = task.done_at {
-            meta_children.push(
-                text(format_date(da, app.today))
-                    .size(12)
-                    .color(tokens.ink_3)
-                    .into(),
-            );
-        }
+    } else if task.done
+        && let Some(da) = task.done_at
+    {
+        meta_children.push(
+            text(format_date(da, app.today))
+                .size(12)
+                .color(tokens.ink_3)
+                .into(),
+        );
     }
 
-    let meta_cell = container(
-        row(meta_children).spacing(10).align_y(Alignment::Center),
-    );
+    let meta_cell = container(row(meta_children).spacing(10).align_y(Alignment::Center));
 
     // Compose
     let row_inner = row![grip, cb_cell, title_cell, meta_cell]
@@ -203,7 +221,9 @@ pub fn view<'a>(app: &'a App, task: &'a Task) -> Element<'a, Message> {
     }
 }
 
-fn notes_dot(tokens: crate::theme::Tokens) -> impl Fn(&iced::Theme) -> iced::widget::container::Style {
+fn notes_dot(
+    tokens: crate::theme::Tokens,
+) -> impl Fn(&iced::Theme) -> iced::widget::container::Style {
     move |_theme| iced::widget::container::Style {
         background: Some(iced::Background::Color(tokens.ink_4)),
         border: iced::Border {

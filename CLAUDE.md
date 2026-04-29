@@ -4,10 +4,22 @@ A Rust + **Iced 0.14** implementation of the design handoff in `design_handoff_i
 
 ## How to run / verify
 
-- `cargo build` — should be 0 errors, ~20 warnings (most are dead-code stubs reserved for future phases).
+- `cargo build` — should be 0 errors, 0 warnings.
 - `cargo run` — opens a 1320×860 frameless rounded window with a 38 px custom titlebar, sidebar, main pane, inspector.
 - Persistence side-effect: `~/Library/Application Support/icedgtd/store.json` is created/updated on every mutation. Delete it to reseed from `data.rs`.
 - There is no test suite; verification is visual against `IcedGTD.html`.
+
+## Always run fmt + clippy after editing
+
+Before declaring any change "done":
+
+1. `cargo fmt` — auto-formats every touched file.
+2. `cargo clippy --all-targets` — should report 0 warnings, 0 errors. If clippy adds warnings, **fix them**, don't suppress them. Real bugs hide here: while building this codebase clippy caught an `if f < to { to } else { to }` typo in `Message::DragEnd` (both branches identical — drag-to-reorder put items at the wrong index after the `Vec::remove` shift). Trust the linter.
+3. `cargo build` — must compile clean.
+
+Apply suggestions for `collapsible_if`, `if_same_then_else`, unused imports, etc. directly. The crate root has `#![allow(dead_code)]` because several `Message` variants and style helpers are deliberate scaffolding for upcoming phases (drag-reorder polish, density popover) — that allow is intentional, don't extend it to silence other lints.
+
+If a clippy lint genuinely doesn't apply (false positive), prefer a targeted `#[allow(clippy::lint_name)]` on the specific item with a one-line comment explaining why, over a crate-wide allow.
 
 ## Architecture
 

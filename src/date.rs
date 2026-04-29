@@ -33,7 +33,11 @@ pub fn due_state(d: NaiveDate, today: NaiveDate) -> DueState {
 pub fn next_saturday(today: NaiveDate) -> NaiveDate {
     let dow = today.weekday().num_days_from_sunday();
     // Saturday is num_days_from_sunday() == 6.
-    let days = if dow == 6 { 7 } else { (6 - dow as i64).rem_euclid(7) };
+    let days = if dow == 6 {
+        7
+    } else {
+        (6 - dow as i64).rem_euclid(7)
+    };
     let days = if days == 0 { 7 } else { days };
     today + Duration::days(days)
 }
